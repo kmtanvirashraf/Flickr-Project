@@ -63,10 +63,10 @@ class PhotoGallery {
                <a href='${photo.src.original}' target="_blank">
                <img src="${photo.src.medium}"> 
                <h3> 
-               Taken by:${photo.photographer}
-               <i class="fa fa-print"  style="font-size:24px;color:rgb(209, 69, 69)"></i>
+               By:${photo.photographer}
+               <i class="fa fa-print"  style="font-size:24px;color:White"></i>
                &nbsp;&nbsp;
-               <i class="fa fa-download" style="font-size:24px;color:rgb(209, 69, 69)"></i>
+               <i class="fa fa-download" style="font-size:24px;color:White"></i>
                </h3>
                </a>
                `;

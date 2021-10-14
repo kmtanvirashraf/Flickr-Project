@@ -229,7 +229,7 @@ body {
   top: 0px;
   right: 0px;
   color: red;
-  content: "\00d7";
+  background-image: url('images/ico.png');
   width: 20px;
   height: 20px;
   text-align: center;
