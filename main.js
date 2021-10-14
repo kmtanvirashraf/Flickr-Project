@@ -6,42 +6,42 @@ class PhotoGallery {
         this.searchForm = document.querySelector(".header form");
         this.loadMore = document.querySelector(".load-more");
         this.searchButton = document.querySelector("form ion-icon");
-        this.logoClick=document.querySelector(".logo");
-        this.pageIndex=1;
-        this.searchString='';
+        this.logoClick = document.querySelector(".logo");
+        this.pageIndex = 1;
+        this.searchString = '';
         this.eventhandle();
-        
+
     }
 
     eventhandle() {
-        document.addEventListener('DOMContentLoaded',()=>{
+        document.addEventListener('DOMContentLoaded', () => {
             this.getImg(1);
         });
-        
-        this.searchForm.addEventListener('submit',(e)=>{
-            this.pageIndex=1;
+
+        this.searchForm.addEventListener('submit', (e) => {
+            this.pageIndex = 1;
             this.getSearchedImages(e);
         });
         this.searchButton.addEventListener('click', (e) => {
-            this.pageIndex=1;
+            this.pageIndex = 1;
             this.getSearchedImagesOnCLick(e);
-            
+
         });
         this.loadMore.addEventListener('click', (e) => {
             this.loadMoreImages(e);
         });
         this.logoClick.addEventListener('click', () => {
-            this.pageIndex=1;
-            this.galleryDiv.innerHTML='';
+            this.pageIndex = 1;
+            this.galleryDiv.innerHTML = '';
             this.getImg(this.pageIndex);
         });
 
     }
     async getImg(index) {
-        this.loadMore.setAttribute('data-img','curated');
+        this.loadMore.setAttribute('data-img', 'curated');
         const baseURL = `https://api.pexels.com/v1/curated?page=${index}&per_page=12`;
         const data = await this.fetchImages(baseURL);
-     
+
         this.GenerateHTML(data.photos);
     }
     async fetchImages(baseURL) {
@@ -62,63 +62,61 @@ class PhotoGallery {
             item.innerHTML = `
                <a href='${photo.src.original}' target="_blank">
                <img src="${photo.src.medium}"> 
-               <h3>Taken by:${photo.photographer}</h3>
+               <h3> 
+               Taken by:${photo.photographer}
+               <i class="fa fa-print"  style="font-size:24px;color:rgb(209, 69, 69)"></i>
+               &nbsp;&nbsp;
+               <i class="fa fa-download" style="font-size:24px;color:rgb(209, 69, 69)"></i>
+               </h3>
                </a>
                `;
             this.galleryDiv.appendChild(item);
         });
 
     }
-    async getSearchedImages(e){
-        this.loadMore.setAttribute('data-img','search');
+    async getSearchedImages(e) {
+        this.loadMore.setAttribute('data-img', 'search');
         e.preventDefault();
-        this.galleryDiv.innerHTML='';
-        const searchvalue=e.target.querySelector("input").value;
-        this.searchString=searchvalue;
-        const baseURL= `https://api.pexels.com/v1/search?query=${searchvalue}&page=1&per_page=12`;
-        const data= await this.fetchImages(baseURL);
+        this.galleryDiv.innerHTML = '';
+        const searchvalue = e.target.querySelector("input").value;
+        this.searchString = searchvalue;
+        const baseURL = `https://api.pexels.com/v1/search?query=${searchvalue}&page=1&per_page=12`;
+        const data = await this.fetchImages(baseURL);
         this.GenerateHTML(data.photos);
         e.target.reset();
     };
-    async getSearchedImagesOnCLick(e){
-        this.loadMore.setAttribute('data-img','search');
+    async getSearchedImagesOnCLick(e) {
+        this.loadMore.setAttribute('data-img', 'search');
         e.preventDefault();
-        this.galleryDiv.innerHTML='';
-        const searchvalue=this.searchForm.querySelector("input").value;
-        this.searchString=searchvalue;
-        const baseURL= `https://api.pexels.com/v1/search?query=${searchvalue}&page=1&per_page=12`;
-        const data= await this.fetchImages(baseURL);
+        this.galleryDiv.innerHTML = '';
+        const searchvalue = this.searchForm.querySelector("input").value;
+        this.searchString = searchvalue;
+        const baseURL = `https://api.pexels.com/v1/search?query=${searchvalue}&page=1&per_page=12`;
+        const data = await this.fetchImages(baseURL);
         this.GenerateHTML(data.photos);
         this.searchForm.reset();
     };
-    async getMoreSearchedImages(index){
-        const searchvalue=this.searchForm.querySelector("input").value;
-        const baseURL=  `https://api.pexels.com/v1/search?query=${this.searchString}&page=${index}&per_page=12`;
-        const data= await this.fetchImages(baseURL);
+    async getMoreSearchedImages(index) {
+        const searchvalue = this.searchForm.querySelector("input").value;
+        const baseURL = `https://api.pexels.com/v1/search?query=${this.searchString}&page=${index}&per_page=12`;
+        const data = await this.fetchImages(baseURL);
         this.GenerateHTML(data.photos);
     }
-    loadMoreImages(e){
-          let index=++this.pageIndex;
-         const loadMoreData= e.target.getAttribute('data-img');
-         if(loadMoreData=='curated')
-         {
-           this.getImg(index);
-         } else{
+    loadMoreImages(e) {
+        let index = ++this.pageIndex;
+        const loadMoreData = e.target.getAttribute('data-img');
+        if (loadMoreData == 'curated') {
+            this.getImg(index);
+        } else {
             this.getMoreSearchedImages(index);
-         }
+        }
     };
+    
 
-    
-    
 }
 const gallery = new PhotoGallery;
 
-document.onreadystatechange = function () {
-    if (document.readyState === "complete") {
-        console.log(document.readyState);
-        document.getElementById("PreLoaderBar").style.display = "none";
-    }
-}
+
 
 // **********************
 
