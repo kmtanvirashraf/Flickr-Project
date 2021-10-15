@@ -9,42 +9,55 @@ class PhotoGallery {
         this.logoClick = document.querySelector(".logo");
         this.pageIndex = 1;
         this.searchString = '';
+        this.URLlink=''; 
         this.eventhandle();
 
     }
-
-    eventhandle() {
-        document.addEventListener('DOMContentLoaded', () => {
+    getURL(indx,searchItem,type)
+    {
+        if(type===1){
+            this.URLlink=`https://api.pexels.com/v1/curated?page=${indx}&per_page=12`;
+        }else if(type===2)
+        {
+           this.URLlink=`https://api.pexels.com/v1/search?query=${searchItem}&page=1&per_page=12`;
+        }
+        else{
+            this.URLlink=`https://api.pexels.com/v1/search?query=${searchItem}&page=${indx}&per_page=12`;
+        }
+         return this.URLlink;
+    };
+    eventhandle() {  // constructor for all the event required
+        document.addEventListener('DOMContentLoaded', () => { // Event for page load
             this.getImg(1);
         });
 
-        this.searchForm.addEventListener('submit', (e) => {
+        this.searchForm.addEventListener('submit', (e) => { // Event for enter when serch string as input 
             this.pageIndex = 1;
             this.getSearchedImages(e);
         });
-        this.searchButton.addEventListener('click', (e) => {
+        this.searchButton.addEventListener('click', (e) => { // Event for clicking search button
             this.pageIndex = 1;
             this.getSearchedImagesOnCLick(e);
 
         });
-        this.loadMore.addEventListener('click', (e) => {
+        this.loadMore.addEventListener('click', (e) => { // Event for clicking LoadMore button
             this.loadMoreImages(e);
         });
-        this.logoClick.addEventListener('click', () => {
+        this.logoClick.addEventListener('click', () => { // Event for clicking Logo
             this.pageIndex = 1;
             this.galleryDiv.innerHTML = '';
             this.getImg(this.pageIndex);
         });
 
     }
-    async getImg(index) {
+    async getImg(index) { // for loading image with default paramiter especialy when page 
+        //loads for the first time or logo click
         this.loadMore.setAttribute('data-img', 'curated');
-        const baseURL = `https://api.pexels.com/v1/curated?page=${index}&per_page=12`;
+        const baseURL=this.getURL(index,'',1);
         const data = await this.fetchImages(baseURL);
-
         this.GenerateHTML(data.photos);
     }
-    async fetchImages(baseURL) {
+    async fetchImages(baseURL) { // Machanism to read data from API
         const response = await fetch(baseURL, {
             method: 'GET',
             headers: {
@@ -55,18 +68,18 @@ class PhotoGallery {
         const data = await response.json();
         return data;
     }
-    GenerateHTML(photos) {
+    GenerateHTML(photos) { // Basically this block generate the image div class in the html and sets other properrties
         photos.forEach(photo => {
             const item = document.createElement('div');
             item.classList.add('item');
             item.innerHTML = `
-               <a href='${photo.src.original}' target="_blank">
+               <a href='${photo.src.original}' target="_blank"> 
                <img src="${photo.src.medium}"> 
                <h3> 
                By:${photo.photographer}
-               <i class="fa fa-print"  style="font-size:24px;color:White"></i>
-               &nbsp;&nbsp;
-               <i class="fa fa-download" style="font-size:24px;color:White"></i>
+               <i class="fa fa-print"  style="font-size:18px;color:White"></i>
+               &nbsp;
+               <i class="fa fa-download" style="font-size:18px;color:White"></i>
                </h3>
                </a>
                `;
@@ -74,37 +87,37 @@ class PhotoGallery {
         });
 
     }
-    async getSearchedImages(e) {
-        this.loadMore.setAttribute('data-img', 'search');
+    async getSearchedImages(e) { // Method to search image based on serch key
+        this.loadMore.setAttribute('data-img', 'search'); // setting the attribute for the load more button other than deafault
         e.preventDefault();
         this.galleryDiv.innerHTML = '';
         const searchvalue = e.target.querySelector("input").value;
-        this.searchString = searchvalue;
-        const baseURL = `https://api.pexels.com/v1/search?query=${searchvalue}&page=1&per_page=12`;
+        this.searchString = searchvalue; // storing search key globaly
+        const baseURL=this.getURL(1,searchvalue,2);
         const data = await this.fetchImages(baseURL);
         this.GenerateHTML(data.photos);
-        e.target.reset();
+        e.target.reset(); // clearing the search input for further use
     };
-    async getSearchedImagesOnCLick(e) {
+    async getSearchedImagesOnCLick(e) { // Just a mirror of previous function.I will try to eleminate this
         this.loadMore.setAttribute('data-img', 'search');
         e.preventDefault();
         this.galleryDiv.innerHTML = '';
         const searchvalue = this.searchForm.querySelector("input").value;
         this.searchString = searchvalue;
-        const baseURL = `https://api.pexels.com/v1/search?query=${searchvalue}&page=1&per_page=12`;
+        const baseURL=this.getURL(1,this.searchString,2);
         const data = await this.fetchImages(baseURL);
         this.GenerateHTML(data.photos);
         this.searchForm.reset();
     };
-    async getMoreSearchedImages(index) {
+    async getMoreSearchedImages(index) { // Method for loading more image on LoadMore button click
         const searchvalue = this.searchForm.querySelector("input").value;
-        const baseURL = `https://api.pexels.com/v1/search?query=${this.searchString}&page=${index}&per_page=12`;
+        const baseURL=this.getURL(index,this.searchString,3);
         const data = await this.fetchImages(baseURL);
         this.GenerateHTML(data.photos);
     }
     loadMoreImages(e) {
-        let index = ++this.pageIndex;
-        const loadMoreData = e.target.getAttribute('data-img');
+        let index = ++this.pageIndex; // incrementing page size by 1
+        const loadMoreData = e.target.getAttribute('data-img'); // checking if it is first page load event or not 
         if (loadMoreData == 'curated') {
             this.getImg(index);
         } else {
@@ -117,19 +130,19 @@ class PhotoGallery {
 const gallery = new PhotoGallery;
 
 
-
+// This block used for Floating card on the page
 // **********************
 
-const touchButton = document.querySelector(".float-text");
-const card = document.querySelector(".float-card-info");
-const close = document.querySelector(".gg-close-r");
+const touchButton = document.querySelector(".float-text");  // get in touch card
+const card = document.querySelector(".float-card-info"); // Displayed floating card once get in touch clicked
+const close = document.querySelector(".gg-close-r"); // closing the floating card
 
 // const searchInput = document.querySelector('input');
 
 touchButton.addEventListener("click", moveCard);
 close.addEventListener("click", moveCard);
 
-function moveCard() {
+function moveCard() { // for displaying and minimizing the floating card
     card.classList.toggle("active");
 }
 
